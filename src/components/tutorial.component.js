@@ -13,7 +13,7 @@ export default class Tutorial extends Component {
 
     this.state = {
       currentTutorial: {
-        id: null,
+        _id: null,
         title: "",
         description: "",
         published: false
@@ -65,13 +65,13 @@ export default class Tutorial extends Component {
 
   updatePublished(status) {
     var data = {
-      id: this.state.currentTutorial.id,
+      _id: this.state.currentTutorial._id,
       title: this.state.currentTutorial.title,
       description: this.state.currentTutorial.description,
       published: status
     };
 
-    TutorialDataService.update(this.state.currentTutorial.id, data)
+    TutorialDataService.update(this.state.currentTutorial._id, data)
       .then(response => {
         this.setState(prevState => ({
           currentTutorial: {
@@ -88,7 +88,7 @@ export default class Tutorial extends Component {
 
   updateTutorial() {
     TutorialDataService.update(
-      this.state.currentTutorial.id,
+      this.state.currentTutorial._id,
       this.state.currentTutorial
     )
       .then(response => {
@@ -103,7 +103,7 @@ export default class Tutorial extends Component {
   }
 
   deleteTutorial() {    
-    TutorialDataService.delete(this.state.currentTutorial.id)
+    TutorialDataService.delete(this.state.currentTutorial._id)
       .then(response => {
         console.log(response.data);
         this.props.history.push('/tutorials')
