@@ -9,6 +9,10 @@ class ListItemDataService {
     return http.get("/listItems/active/");
   }
 
+  getItemDictionary() {
+    return http.get("/listItems/itemDict/");
+  }
+
   get(id) {
     return http.get(`/listItems/${id}`);
   }
@@ -29,7 +33,7 @@ class ListItemDataService {
     return http.delete(`/listItems/${id}`);
   }
 
-  deleteSale(id, saleID, data) {
+  deleteSale(id, saleID) {
     return http.delete(`/listItems/sale/${id}/${saleID}`);
   }
 
