@@ -396,7 +396,13 @@ class App extends Component {
     switch (sortType) {
       case SortType.Aisle:
         return filteredListItems.sort(function (a, b) {
-          return a.listItemDict.aisleSort - b.listItemDict.aisleSort;
+          if (a.listItemDict && b.listItemDict) {
+            return a.listItemDict.aisleSort - b.listItemDict.aisleSort;
+          } else if (a.listItemDict) {
+            return -1;
+          } else {
+            return 1;
+          }
         });
       case SortType.Name:
         return filteredListItems.sort(function (a, b) {

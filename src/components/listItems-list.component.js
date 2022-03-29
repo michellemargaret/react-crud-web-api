@@ -340,6 +340,7 @@ export default class ListItemsList extends Component {
 
           <button
             className="m-3 btn btn-sm btn-danger"
+            hidden
             onClick={removeAllListItems}
           >
             Remove All

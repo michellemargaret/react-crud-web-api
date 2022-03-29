@@ -170,14 +170,16 @@ export default class SubNavBar extends Component {
           <select
             id="highlightStore"
             value={highlightStore ? highlightStore : ""}
-            className="form-control form-control-sm"
+            className="form-control form-control-sm w-50"
             onChange={onChangeStore}
             name="highlightStore"
           >
             <option label="None" value="" />
             {stores &&
               stores.map((store, index) => (
-                <option label={store.value} value={store.key} key={index} />
+                <option label={store.value} value={store.key} key={index}>
+                  {store.value}
+                </option>
               ))}
           </select>
         </div>

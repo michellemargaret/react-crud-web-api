@@ -118,11 +118,9 @@ export default class AddSaleItem extends Component {
                   <option label="" value="" />
                   {stores &&
                     stores.map((store, index) => (
-                      <option
-                        label={store.value}
-                        value={store.key}
-                        key={index}
-                      />
+                      <option label={store.value} value={store.key} key={index}>
+                        {store.value}
+                      </option>
                     ))}
                 </select>
               </td>

@@ -69,7 +69,9 @@ export default class AddListItem extends Component {
                         label={dictItem.name}
                         value={dictItem._id}
                         key={index}
-                      />
+                      >
+                        {dictItem.name}
+                      </option>
                     ))}
                 </select>
               </td>
@@ -125,14 +127,30 @@ export default class AddListItem extends Component {
                   name="quantityUnit"
                 >
                   <option label="" value="" />
-                  <option label="pound" value="lb" />
-                  <option label="gram" value="g" />
-                  <option label="kg" value="kg" />
-                  <option label="ml" value="ml" />
-                  <option label="cup(s)" value="cup(s)" />
-                  <option label="item" value="item" />
-                  <option label="box" value="box" />
-                  <option label="bag" value="bag" />
+                  <option label="lb" value="lb">
+                    lb
+                  </option>
+                  <option label="g" value="g">
+                    g
+                  </option>
+                  <option label="kg" value="kg">
+                    kg
+                  </option>
+                  <option label="ml" value="ml">
+                    ml
+                  </option>
+                  <option label="cup(s)" value="cup(s)">
+                    cup(s)
+                  </option>
+                  <option label="item" value="item">
+                    item(s)
+                  </option>
+                  <option label="box" value="box">
+                    box(es)
+                  </option>
+                  <option label="bag" value="bag">
+                    bag(s)
+                  </option>
                 </select>
               </td>
               <td>
@@ -144,10 +162,18 @@ export default class AddListItem extends Component {
                   name="priority"
                 >
                   <option label="" value="" />
-                  <option label="Low" value="Low" />
-                  <option label="Normal" value="Normal" />
-                  <option label="High" value="High" />
-                  <option label="Urgent" value="Urgent" />
+                  <option label="Low" value="Low">
+                    Low
+                  </option>
+                  <option label="Normal" value="Normal">
+                    Normal
+                  </option>
+                  <option label="High" value="High">
+                    High
+                  </option>
+                  <option label="Urgent" value="Urgent">
+                    Urgent
+                  </option>
                 </select>
               </td>
             </tr>
