@@ -44,6 +44,7 @@ export default class AddListItem extends Component {
                   type="text"
                   className="form-control form-control-sm"
                   id="name"
+                  autoFocus
                   required
                   value={currentListItem.name}
                   onChange={onChangeName}
@@ -218,7 +219,7 @@ export default class AddListItem extends Component {
                   onClick={saveListItem}
                   className="btn btn-sm btn-success m-1"
                 >
-                  Add
+                  Save
                 </button>
                 <button
                   onClick={closeNewForm}

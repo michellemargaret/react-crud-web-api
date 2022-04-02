@@ -5,6 +5,7 @@ import "./App.css";
 
 import ListItemsList from "./components/listItems-list.component";
 import SubNavBar from "./components/sub-navbar.component.js";
+import SubBottomNavBar from "./components/sub-bottomnavbar.component.js";
 
 class ListType {
   static Active = new ListType("active");
@@ -40,6 +41,7 @@ class App extends Component {
       showNewItemForm: false,
       showAddSaleForm: false,
       highlightStore: "Powells",
+      focusOn: null,
 
       currentListItem: {
         _id: null,
@@ -180,6 +182,12 @@ class App extends Component {
     this.retrieveListItems();
   }
 
+  componentDidUpdate() {
+    if (this.state.focusOn != null) {
+      this.state.focusOn.focus();
+    }
+  }
+
   retrieveListItems = () => {
     ListItemDataService.getAll()
       .then((response) => {
@@ -206,10 +214,13 @@ class App extends Component {
 
   refreshList = () => {
     this.retrieveListItems();
-    this.setState({
-      //  currentListItem: null,
-      currentIndex: -1,
-    });
+
+    if (this.state.currentListItem._id === null) {
+      this.setState({
+        //  currentListItem: null,
+        currentIndex: -1,
+      });
+    }
   };
 
   editItem = (listItem, index) => {
@@ -218,6 +229,7 @@ class App extends Component {
         this.setState({
           currentListItem: response.data,
           showNewItemForm: true,
+          focusOn: null,
         });
 
         this.retrieveItemDictionary();
@@ -243,12 +255,16 @@ class App extends Component {
         notBuyingAt: null,
       },
       showNewItemForm: true,
+      focusOn: null,
     });
     this.retrieveItemDictionary();
   };
 
   closeNewForm = () => {
     this.setState({
+      focusOn: document.getElementById(
+        "itemID" + this.state.currentListItem._id
+      ),
       currentListItem: {
         _id: null,
         name: "",
@@ -345,6 +361,7 @@ class App extends Component {
     this.setState({
       currentListItem: listItem,
       showAddSaleForm: true,
+      focusOn: null,
     });
   };
 
@@ -448,35 +465,21 @@ class App extends Component {
 
   render() {
     return (
-      <div>
-        <div className="container mt-3">
+      <div className="container-fluid">
+        <div className="fixed-top bg-dark">
           <SubNavBar
-            activeCount={this.countListItems(
-              ListType.Active,
-              this.state.listItems
-            )}
-            activeType={ListType.Active}
-            notBuyingCount={this.countListItems(
-              ListType.NotBuying,
-              this.state.listItems
-            )}
-            notBuyingType={ListType.NotBuying}
-            boughtCount={this.countListItems(
-              ListType.Bought,
-              this.state.listItems
-            )}
-            boughtType={ListType.Bought}
-            onClick={this.setListType}
             aisleSort={SortType.Aisle}
             prioritySort={SortType.Priority}
             nameSort={SortType.Name}
             setSort={this.setSort}
+            addNew={this.addNew}
             highlightStore={this.state.highlightStore}
             onChangeStore={this.onChangeStore}
-            addNew={this.addNew}
-            currentListType={this.state.currentListType}
             currentSortType={this.state.currentSortType}
           />
+        </div>
+
+        <div className="pt-55">
           <ListItemsList
             listItems={this.filterListItems(
               this.state.currentListType,
@@ -513,6 +516,29 @@ class App extends Component {
             removeAllListItems={this.removeAllListItems}
             closeNewForm={this.closeNewForm}
             highlightStore={this.state.highlightStore}
+          />
+        </div>
+
+        <div className="footer fixed-bottom bg-dark">
+          <SubBottomNavBar
+            activeCount={this.countListItems(
+              ListType.Active,
+              this.state.listItems
+            )}
+            activeType={ListType.Active}
+            notBuyingCount={this.countListItems(
+              ListType.NotBuying,
+              this.state.listItems
+            )}
+            notBuyingType={ListType.NotBuying}
+            boughtCount={this.countListItems(
+              ListType.Bought,
+              this.state.listItems
+            )}
+            boughtType={ListType.Bought}
+            onClick={this.setListType}
+            addNew={this.addNew}
+            currentListType={this.state.currentListType}
           />
         </div>
       </div>

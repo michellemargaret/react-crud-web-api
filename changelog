@@ -1,0 +1,22 @@
+# Changelog
+
+Currently working on
+
+- On save, focus on item saved
+- change sort by and current store to collapsible drop down menu
+
+## [1.0.1] - 2022-04-02
+
+### Added
+
+- On edit, automatically focus on text box (insert, edit, add sale)
+- Move list counts to bottom of page, keep visible when scrolling
+- keep sort and current store at top of page when scrolling
+
+### Changed
+
+### Removed
+
+### Fixed
+
+### Security

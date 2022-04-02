@@ -4,6 +4,7 @@ import AddSaleItem from "./add-saleItem.component";
 import Moment from "moment";
 
 export default class ListItemsList extends Component {
+  componentDidMount() {}
   getListClasses(listItem) {
     let classes = "list-group-item list-group-item-action ";
 
@@ -146,6 +147,7 @@ export default class ListItemsList extends Component {
           className="btn text-primary mr-3"
           aria-label="Edit"
           onClick={() => onEdit(listItem, index)}
+          id={"itemID" + listItem._id}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -249,103 +251,99 @@ export default class ListItemsList extends Component {
       onDeleteSale,
       removeAllListItems,
       highlightStore,
+      currentIndex,
     } = this.props;
 
     Moment.locale("en");
 
     return (
-      <div className="list row">
-        <div className="col-md-6">
-          <ul className="list-group list-group-flush">
-            {showNewItemForm ? this.insertNewItem(this.props) : ""}
-            {showAddSaleForm ? this.showAddSale(this.props) : ""}
-            {listItems &&
-              listItems.map((listItem, index) => (
-                <li className={this.getListClasses(listItem)} key={index}>
-                  <div className={this.getPriorityClass(listItem.priority)}>
-                    {listItem.name}
-                    {this.hasSaleAtCurrentStore(highlightStore, listItem.sales)}
-                  </div>
-                  <div className="small">
-                    {listItem.details ? listItem.details + " * " : ""}
-                    {listItem.quantity
-                      ? listItem.quantity + " " + listItem.quantityUnit + " * "
-                      : ""}
-                    {listItem.forDate
-                      ? `For: ${Moment(listItem.forDate).format("MMM d")} * `
-                      : ""}
-                    {listItem.recipeLink ? listItem.recipeLink + " * " : ""}
-                    Aisle:{" "}
-                    {listItem.listItemDict
-                      ? listItem.listItemDict.aisleSort
-                      : ""}
-                  </div>
-                  {listItem.sales &&
-                    listItem.sales.map((sale, saleIndex) => (
-                      <div
-                        key={saleIndex}
-                        className={
-                          sale.store === highlightStore
-                            ? "small text-danger font-weight-bold"
-                            : "small"
-                        }
-                      >
-                        <div key={saleIndex}>
-                          <button
-                            className="btn text-danger mr-0 m-0 p-0"
-                            aria-label="Delete Sale"
-                            onClick={() => onDeleteSale(listItem, sale)}
+      <div className="col-md-6">
+        <ul className="list-group list-group-flush">
+          {showNewItemForm ? this.insertNewItem(this.props) : ""}
+          {showAddSaleForm ? this.showAddSale(this.props) : ""}
+          {listItems &&
+            listItems.map((listItem, index) => (
+              <li className={this.getListClasses(listItem)} key={index}>
+                <div className={this.getPriorityClass(listItem.priority)}>
+                  {listItem.name}
+                  {this.hasSaleAtCurrentStore(highlightStore, listItem.sales)}
+                </div>
+                <div className="small">
+                  {listItem.details ? listItem.details + " * " : ""}
+                  {listItem.quantity
+                    ? listItem.quantity + " " + listItem.quantityUnit + " * "
+                    : ""}
+                  {listItem.forDate
+                    ? `For: ${Moment(listItem.forDate).format("MMM d")} * `
+                    : ""}
+                  {listItem.recipeLink ? listItem.recipeLink + " * " : ""}
+                  {listItem.listItemDict ? listItem.listItemDict.aisle : ""}
+                </div>
+                {listItem.sales &&
+                  listItem.sales.map((sale, saleIndex) => (
+                    <div
+                      key={saleIndex}
+                      className={
+                        sale.store === highlightStore
+                          ? "small text-danger font-weight-bold"
+                          : "small"
+                      }
+                    >
+                      <div key={saleIndex}>
+                        <button
+                          className="btn text-danger mr-0 m-0 p-0"
+                          aria-label="Delete Sale"
+                          onClick={() => onDeleteSale(listItem, sale)}
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="16"
+                            height="16"
+                            fill="currentColor"
+                            className="bi bi-x"
+                            viewBox="0 0 16 16"
                           >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="16"
-                              height="16"
-                              fill="currentColor"
-                              className="bi bi-x"
-                              viewBox="0 0 16 16"
-                            >
-                              <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" />
-                            </svg>
-                          </button>
-                          {sale.store}{" "}
-                          {sale.price
-                            ? "$" +
-                              sale.price
-                                .toFixed(2)
-                                .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")
-                            : ""}{" "}
-                          {sale.details}
-                          {sale.startDate
-                            ? Moment(sale.startDate).format("MMM d")
-                            : ""}
-                          {sale.endDate
-                            ? Moment(sale.endDate).format("MMM d")
-                            : ""}
-                        </div>
+                            <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" />
+                          </svg>
+                        </button>
+                        {sale.store}{" "}
+                        {sale.price
+                          ? "$" +
+                            sale.price
+                              .toFixed(2)
+                              .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")
+                          : ""}{" "}
+                        {sale.details}
+                        {sale.startDate
+                          ? Moment(sale.startDate).format("MMM d")
+                          : ""}
+                        {sale.endDate
+                          ? Moment(sale.endDate).format("MMM d")
+                          : ""}
                       </div>
-                    ))}
-                  {this.isActive(listItem)
-                    ? this.getActiveButtons(
-                        onBuy,
-                        onNotBuying,
-                        onEdit,
-                        onAddSale,
-                        listItem,
-                        index
-                      )
-                    : this.getInactiveButtons(onAddBack, listItem, index)}
-                </li>
-              ))}
-          </ul>
+                    </div>
+                  ))}
+                {this.isActive(listItem)
+                  ? this.getActiveButtons(
+                      onBuy,
+                      onNotBuying,
+                      onEdit,
+                      onAddSale,
+                      listItem,
+                      index
+                    )
+                  : this.getInactiveButtons(onAddBack, listItem, index)}
+              </li>
+            ))}
+        </ul>
 
-          <button
-            className="m-3 btn btn-sm btn-danger"
-            hidden
-            onClick={removeAllListItems}
-          >
-            Remove All
-          </button>
-        </div>
+        <button
+          className="m-3 btn btn-sm btn-danger"
+          hidden
+          onClick={removeAllListItems}
+        >
+          Remove All
+        </button>
       </div>
     );
   }

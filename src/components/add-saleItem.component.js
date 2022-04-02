@@ -108,6 +108,7 @@ export default class AddSaleItem extends Component {
               <td colSpan="2">
                 <select
                   id="storename"
+                  autoFocus
                   value={
                     this.state.saleItem.store ? this.state.saleItem.store : ""
                   }
