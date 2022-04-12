@@ -40,8 +40,9 @@ class App extends Component {
       currentSortType: SortType.Name,
       showNewItemForm: false,
       showAddSaleForm: false,
-      highlightStore: "Powells",
+      highlightStore: "buildList",
       focusOn: null,
+      errorMessages: [],
 
       currentListItem: {
         _id: null,
@@ -120,63 +121,47 @@ class App extends Component {
     }));
   };
 
-  onChangePriority = (e) => {
-    const priority = e.target.value;
-
-    this.setState((prevState) => ({
-      currentListItem: {
-        ...prevState.currentListItem,
-        priority: priority,
-      },
-    }));
-  };
-
-  onChangeForDate = (e) => {
-    const forDate = e.target.value;
-
-    this.setState((prevState) => ({
-      currentListItem: {
-        ...prevState.currentListItem,
-        forDate: forDate,
-      },
-    }));
-  };
-
-  onChangeRecipeLink = (e) => {
-    const recipeLink = e.target.value;
-
-    this.setState((prevState) => ({
-      currentListItem: {
-        ...prevState.currentListItem,
-        recipeLink: recipeLink,
-      },
-    }));
-  };
-
   saveListItem = () => {
-    if (this.state.currentListItem._id === null) {
-      ListItemDataService.create(this.state.currentListItem)
-        .then((response) => {
-          this.refreshList();
-          this.closeNewForm();
-        })
-        .catch((e) => {
-          console.log(e);
-        });
-    } else {
-      ListItemDataService.update(
-        this.state.currentListItem._id,
-        this.state.currentListItem
-      )
-        .then((response) => {
-          this.refreshList();
-          this.closeNewForm();
-        })
-        .catch((e) => {
-          console.log(e);
-        });
+    if (this.validateListItem("listItem", null) === 0) {
+      this.updateListItem(this.state.currentListItem, this.state.currentIndex);
+      this.closeNewForm();
     }
   };
+
+  saveAnotherListItem = () => {
+    if (this.validateListItem("listItem", null) === 0) {
+      this.updateListItem(this.state.currentListItem, this.state.currentIndex);
+      this.addNew();
+    }
+  };
+
+  validateListItem(inType, inItem) {
+    let errorMessages = [];
+
+    if (inType === "listItem") {
+      if (this.state.currentListItem.name === "") {
+        errorMessages.push("Item is required.");
+      }
+
+      if (this.state.currentListItem.listItemDict === null) {
+        errorMessages.push("Category is required.");
+      }
+    } else if (inType === "sale") {
+      if (inItem.store === "") {
+        errorMessages.push("Store is required.");
+      }
+
+      var regex = "[0-9]+(.[0-9][0-9])?$";
+      if (!(inItem.price && inItem.price.match(regex))) {
+        errorMessages.push("Price is required.");
+      }
+    }
+    this.setState({
+      errorMessages: errorMessages,
+    });
+
+    return errorMessages.length;
+  }
 
   componentDidMount() {
     this.retrieveListItems();
@@ -185,6 +170,9 @@ class App extends Component {
   componentDidUpdate() {
     if (this.state.focusOn != null) {
       this.state.focusOn.focus();
+      this.setState({
+        focusOn: null,
+      });
     }
   }
 
@@ -201,15 +189,17 @@ class App extends Component {
   };
 
   retrieveItemDictionary = () => {
-    ListItemDataService.getItemDictionary()
-      .then((response) => {
-        this.setState({
-          itemDictionary: response.data,
+    if (this.state.itemDictionary.length === 0) {
+      ListItemDataService.getItemDictionary()
+        .then((response) => {
+          this.setState({
+            itemDictionary: response.data,
+          });
+        })
+        .catch((e) => {
+          console.log(e);
         });
-      })
-      .catch((e) => {
-        console.log(e);
-      });
+    }
   };
 
   refreshList = () => {
@@ -224,19 +214,13 @@ class App extends Component {
   };
 
   editItem = (listItem, index) => {
-    ListItemDataService.get(listItem._id)
-      .then((response) => {
-        this.setState({
-          currentListItem: response.data,
-          showNewItemForm: true,
-          focusOn: null,
-        });
-
-        this.retrieveItemDictionary();
-      })
-      .catch((e) => {
-        console.log(e);
-      });
+    this.retrieveItemDictionary();
+    this.setState({
+      currentListItem: listItem,
+      currentIndex: index,
+      showNewItemForm: true,
+      errorMessages: [],
+    });
   };
 
   addNew = () => {
@@ -253,9 +237,11 @@ class App extends Component {
         recipeLink: "",
         boughtAt: null,
         notBuyingAt: null,
+        sales: [],
       },
+      currentIndex: -1,
       showNewItemForm: true,
-      focusOn: null,
+      errorMessages: [],
     });
     this.retrieveItemDictionary();
   };
@@ -279,12 +265,16 @@ class App extends Component {
         notBuyingAt: null,
       },
       showNewItemForm: false,
+      errorMessages: [],
     });
   };
 
   closeSaleForm = () => {
     this.setState({
       showAddSaleForm: false,
+      focusOn: document.getElementById(
+        "itemID" + this.state.currentListItem._id
+      ),
     });
   };
 
@@ -301,6 +291,16 @@ class App extends Component {
   addBack = (listItem, index) => {
     listItem.boughtAt = null;
     listItem.notBuyingAt = null;
+    this.updateListItem(listItem, index);
+  };
+
+  upPriority = (listItem, index) => {
+    listItem.priority = this.changePriority(listItem.priority, "up");
+    this.updateListItem(listItem, index);
+  };
+
+  downPriority = (listItem, index) => {
+    listItem.priority = this.changePriority(listItem.priority, "down");
     this.updateListItem(listItem, index);
   };
 
@@ -337,14 +337,62 @@ class App extends Component {
     });
   };
 
+  changePriority(currentPriority, direction) {
+    if (direction === "up") {
+      switch (currentPriority) {
+        case "Low":
+          return "Normal";
+        case "Normal":
+          return "High";
+        case "High":
+          return "Urgent";
+        case "Urgent":
+          return "Urgent";
+        default:
+          return "High";
+      }
+    } else {
+      switch (currentPriority) {
+        case "Low":
+          return "Low";
+        case "Normal":
+          return "Low";
+        case "High":
+          return "Normal";
+        case "Urgent":
+          return "High";
+        default:
+          return "Low";
+      }
+    }
+  }
+
+  // Update state without waiting on backend to update
   updateListItem(listItem, index) {
-    ListItemDataService.update(listItem._id, listItem)
-      .then((response) => {
-        this.retrieveListItems();
-      })
-      .catch((e) => {
-        console.log(e);
-      });
+    let listItems = this.state.listItems;
+
+    if (index < 0) {
+      listItems.push(listItem);
+
+      ListItemDataService.create(listItem)
+        .then((response) => {})
+        .catch((e) => {
+          console.log(e);
+        });
+    } else {
+      listItems[listItems.findIndex((c) => c._id === listItem._id)] = listItem;
+
+      ListItemDataService.update(listItem._id, listItem)
+        .then((response) => {})
+        .catch((e) => {
+          console.log(e);
+        });
+    }
+
+    this.setState({
+      listItems: listItems,
+      currentIndex: null,
+    });
   }
 
   removeAllListItems = () => {
@@ -361,25 +409,49 @@ class App extends Component {
     this.setState({
       currentListItem: listItem,
       showAddSaleForm: true,
-      focusOn: null,
     });
   };
 
   saveSale = (saleItem) => {
-    ListItemDataService.createSale(this.state.currentListItem._id, saleItem)
-      .then((response) => {
-        this.closeSaleForm();
-        this.refreshList();
-      })
-      .catch((e) => {
-        console.log(e);
+    if (this.validateListItem("sale", saleItem) === 0) {
+      this.closeSaleForm();
+
+      let listItem = this.state.currentListItem;
+      listItem.sales.push(saleItem);
+
+      let listItems = this.state.listItems;
+      listItems[listItems.findIndex((c) => c._id === listItem._id)] = listItem;
+
+      this.setState({
+        listItems: listItems,
       });
+
+      ListItemDataService.createSale(this.state.currentListItem._id, saleItem)
+        .then((response) => {
+          this.refreshList();
+        })
+        .catch((e) => {
+          console.log(e);
+        });
+    }
   };
 
   deleteSale = (listItem, saleItem) => {
+    listItem.sales.splice(
+      listItem.sales.findIndex((c) => c._id === saleItem._id),
+      1
+    );
+
+    let listItems = this.state.listItems;
+
+    listItems[listItems.findIndex((c) => c._id === listItem._id)] = listItem;
+
+    this.setState({
+      listItems: listItems,
+    });
+
     ListItemDataService.deleteSale(listItem._id, saleItem._id)
       .then((response) => {
-        this.closeSaleForm();
         this.refreshList();
       })
       .catch((e) => {
@@ -495,8 +567,9 @@ class App extends Component {
             onEdit={this.editItem}
             onAddSale={this.addSale}
             onDeleteSale={this.deleteSale}
+            onUpPriority={this.upPriority}
+            onDownPriority={this.downPriority}
             editItemID={this.state.editItemID}
-            onSaveNew={this.refreshList}
             showNewItemForm={this.state.showNewItemForm}
             showAddSaleForm={this.state.showAddSaleForm}
             onSaveSale={this.saveSale}
@@ -506,6 +579,7 @@ class App extends Component {
             listItem={this.state.currentListItem}
             newListItem={this.newListItem}
             saveListItem={this.saveListItem}
+            saveAnotherListItem={this.saveAnotherListItem}
             onChangeItemDict={this.onChangeItemDict}
             onChangeDetails={this.onChangeDetails}
             onChangeQuantity={this.onChangeQuantity}
@@ -516,6 +590,7 @@ class App extends Component {
             removeAllListItems={this.removeAllListItems}
             closeNewForm={this.closeNewForm}
             highlightStore={this.state.highlightStore}
+            errorMessages={this.state.errorMessages}
           />
         </div>
 

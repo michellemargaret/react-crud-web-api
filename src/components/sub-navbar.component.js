@@ -115,6 +115,9 @@ export default class SubNavBar extends Component {
             onChange={onChangeStore}
             name="highlightStore"
           >
+            <option label="-- Update List --" value="buildList">
+              -- Write List --
+            </option>
             <option label="-- Shopping At --" value="">
               -- Shopping At --
             </option>

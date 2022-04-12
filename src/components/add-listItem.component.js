@@ -5,19 +5,13 @@ export default class AddListItem extends Component {
     const {
       onChangeName,
       saveListItem,
+      saveAnotherListItem,
       closeNewForm,
       currentListItem,
       itemDictionary,
+      errorMessages,
     } = this.props;
-    const {
-      onChangeItemDict,
-      onChangeDetails,
-      onChangeQuantity,
-      onChangeQuantityUnit,
-      onChangePriority,
-      onChangeForDate,
-      onChangeRecipeLink,
-    } = this.props;
+    const { onChangeItemDict, onChangeDetails } = this.props;
 
     return (
       <div className="submit-form">
@@ -80,7 +74,7 @@ export default class AddListItem extends Component {
             <tr>
               <td colSpan="3">
                 <label htmlFor="details" className="figure-caption p-0 m-0">
-                  Details
+                  Notes
                 </label>
               </td>
             </tr>
@@ -97,119 +91,20 @@ export default class AddListItem extends Component {
               </td>
             </tr>
             <tr>
-              <td colSpan="2">
-                <label htmlFor="quantity" className="figure-caption p-0 m-0">
-                  Quantity
-                </label>
-              </td>
-              <td>
-                <label htmlFor="priority" className="figure-caption p-0 m-0">
-                  Priority
-                </label>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <input
-                  type="text"
-                  className="form-control form-control-sm"
-                  id="quantity"
-                  value={currentListItem.quantity || ""}
-                  onChange={onChangeQuantity}
-                  name="quantity"
-                />
-              </td>
-              <td>
-                <select
-                  id="quantityUnit"
-                  className="form-control form-control-sm"
-                  value={currentListItem.quantityUnit}
-                  onChange={onChangeQuantityUnit}
-                  name="quantityUnit"
-                >
-                  <option label="" value="" />
-                  <option label="lb" value="lb">
-                    lb
-                  </option>
-                  <option label="g" value="g">
-                    g
-                  </option>
-                  <option label="kg" value="kg">
-                    kg
-                  </option>
-                  <option label="ml" value="ml">
-                    ml
-                  </option>
-                  <option label="cup(s)" value="cup(s)">
-                    cup(s)
-                  </option>
-                  <option label="item" value="item">
-                    item(s)
-                  </option>
-                  <option label="box" value="box">
-                    box(es)
-                  </option>
-                  <option label="bag" value="bag">
-                    bag(s)
-                  </option>
-                </select>
-              </td>
-              <td>
-                <select
-                  id="priority"
-                  className="form-control form-control-sm"
-                  value={currentListItem.priority}
-                  onChange={onChangePriority}
-                  name="priority"
-                >
-                  <option label="" value="" />
-                  <option label="Low" value="Low">
-                    Low
-                  </option>
-                  <option label="Normal" value="Normal">
-                    Normal
-                  </option>
-                  <option label="High" value="High">
-                    High
-                  </option>
-                  <option label="Urgent" value="Urgent">
-                    Urgent
-                  </option>
-                </select>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <label htmlFor="forDate" className="figure-caption p-0 m-0">
-                  Date Needed
-                </label>
-              </td>
-              <td colSpan="2">
-                <label htmlFor="recipeLink" className="figure-caption p-0 m-0">
-                  Recipe (link)
-                </label>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <input
-                  type="text"
-                  className="form-control form-control-sm"
-                  id="forDate"
-                  value={currentListItem.forDate || ""}
-                  onChange={onChangeForDate}
-                  name="forDate"
-                />
-              </td>
-              <td colSpan="2">
-                <input
-                  type="text"
-                  className="form-control form-control-sm"
-                  id="recipeLink"
-                  value={currentListItem.recipeLink}
-                  onChange={onChangeRecipeLink}
-                  name="recipeLink"
-                />
+              <td colSpan="3">
+                {errorMessages.length > 0 ? (
+                  <div className="text-danger small font-weight-bold">
+                    Fix the following errors to continue:{" "}
+                  </div>
+                ) : (
+                  ""
+                )}
+                {errorMessages &&
+                  errorMessages.map((errorMessage, index) => (
+                    <div className="small text-danger" key={index}>
+                      {errorMessage}
+                    </div>
+                  ))}
               </td>
             </tr>
             <tr>
@@ -217,15 +112,53 @@ export default class AddListItem extends Component {
               <td colSpan="2" className="text-right">
                 <button
                   onClick={saveListItem}
-                  className="btn btn-sm btn-success m-1"
+                  className="btn btn-sm txt-success m-1"
                 >
-                  Save
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    className="bi bi-check-circle"
+                    viewBox="0 0 16 16"
+                  >
+                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                    <path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z" />
+                  </svg>
                 </button>
+                {currentListItem._id === null ? (
+                  <button
+                    onClick={saveAnotherListItem}
+                    className="btn btn-sm txt-success m-1"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      fill="currentColor"
+                      className="bi bi-plus-circle"
+                      viewBox="0 0 16 16"
+                    >
+                      <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                      <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" />
+                    </svg>
+                  </button>
+                ) : null}
                 <button
                   onClick={closeNewForm}
-                  className="btn btn-sm btn-success m-1"
+                  className="btn btn-sm txt-success m-1"
                 >
-                  Cancel
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    className="bi bi-x-circle"
+                    viewBox="0 0 16 16"
+                  >
+                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                    <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" />
+                  </svg>
                 </button>
               </td>
             </tr>
