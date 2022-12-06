@@ -132,6 +132,10 @@ class App extends Component {
     if (this.validateListItem("listItem", null) === 0) {
       this.updateListItem(this.state.currentListItem, this.state.currentIndex);
       this.addNew();
+
+      this.setState({
+        focusOn: document.getElementById("name"),
+      });
     }
   };
 
