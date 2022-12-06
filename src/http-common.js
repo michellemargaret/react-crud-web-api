@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export default axios.create({
-  baseURL: "http://mygrocerylist-env.eba-mqvynsm9.us-east-1.elasticbeanstalk.com/api",
+  baseURL: "https://mygrocerylistapi.ca/api",
   headers: {
     "Content-type": "application/json",
   },
